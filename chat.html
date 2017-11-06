@@ -1,0 +1,1297 @@
+<html>
+<head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+
+        html,
+        body,
+        div,
+        span {
+
+            width: 100%;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url("http://shurl.esy.es/y") no-repeat fixed center;
+            background-size: cover;
+        }
+
+        .fa-2x {
+            font-size: 1.5em;
+        }
+
+        .app {
+            position: relative;
+            overflow: hidden;
+            top: 19px;
+            height: calc(100% - 38px);
+            margin: auto;
+            padding: 0;
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .06), 0 2px 5px 0 rgba(0, 0, 0, .2);
+        }
+
+        .app-one {
+            background-color: #f7f7f7;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .06), 0 2px 5px 0 rgba(0, 0, 0, .2);
+        }
+
+        .side {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+
+        .side-one {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+            position: relative;
+            display: block;
+            top: 0;
+        }
+
+        .side-two {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 2;
+            position: relative;
+            top: -100%;
+            left: -100%;
+            -webkit-transition: left 0.3s ease;
+            transition: left 0.3s ease;
+
+        }
+
+        .heading {
+            padding: 10px 16px 10px 15px;
+            margin: 0;
+            height: 60px;
+            width: 100%;
+            background-color: #eee;
+            z-index: 1000;
+        }
+
+        .heading-avatar {
+            padding: 0;
+            cursor: pointer;
+
+        }
+
+        .heading-avatar-icon img {
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+        }
+
+        .heading-name {
+            padding: 0 !important;
+            cursor: pointer;
+        }
+
+        .heading-name-meta {
+            font-weight: 700;
+            font-size: 100%;
+            padding: 5px;
+            padding-bottom: 0;
+            text-align: left;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #000;
+            display: block;
+        }
+
+        .heading-online {
+            display: none;
+            padding: 0 5px;
+            font-size: 12px;
+            color: #93918f;
+        }
+
+        .heading-compose {
+            padding: 0;
+        }
+
+        .heading-compose i {
+            text-align: center;
+            padding: 5px;
+            color: #93918f;
+            cursor: pointer;
+        }
+
+        .heading-dot {
+            padding: 0;
+            margin-left: 10px;
+        }
+
+        .heading-dot i {
+            text-align: right;
+            padding: 5px;
+            color: #93918f;
+            cursor: pointer;
+        }
+
+        .searchBox {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 60px;
+            width: 100%;
+        }
+
+        .searchBox-inner {
+            height: 100%;
+            width: 100%;
+            padding: 10px !important;
+            background-color: #fbfbfb;
+        }
+
+        /*#searchBox-inner input {
+          box-shadow: none;
+        }*/
+
+        .searchBox-inner input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .sideBar {
+            padding: 0 !important;
+            margin: 0 !important;
+            background-color: #fff;
+            overflow-y: auto;
+            border: 1px solid #f7f7f7;
+            height: calc(100% - 120px);
+        }
+
+        .sideBar-body {
+            position: relative;
+            padding: 10px !important;
+            border-bottom: 1px solid #f7f7f7;
+            height: 72px;
+            margin: 0 !important;
+            cursor: pointer;
+        }
+
+        .sideBar-body:hover {
+            background-color: #f2f2f2;
+        }
+
+        .sideBar-avatar {
+            text-align: center;
+            padding: 0 !important;
+        }
+
+        .avatar-icon img {
+            border-radius: 50%;
+            height: 49px;
+            width: 49px;
+        }
+
+        .sideBar-main {
+            padding: 0 !important;
+        }
+
+        .sideBar-main .row {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .sideBar-name {
+            padding: 10px !important;
+        }
+
+        .name-meta {
+            font-size: 100%;
+            padding: 1% !important;
+            text-align: left;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #000;
+        }
+
+        .sideBar-time {
+            padding: 10px !important;
+        }
+
+        .time-meta {
+            text-align: right;
+            font-size: 12px;
+            padding: 1% !important;
+            color: rgba(0, 0, 0, .4);
+            vertical-align: baseline;
+        }
+
+        /*New Message*/
+
+        .newMessage {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 100%;
+            position: relative;
+            left: -100%;
+        }
+
+        .newMessage-heading {
+            padding: 10px 16px 10px 15px !important;
+            margin: 0 !important;
+            height: 100px;
+            width: 100%;
+            background-color: #00bfa5;
+            z-index: 1001;
+        }
+
+        .newMessage-main {
+            padding: 10px 16px 0 15px !important;
+            margin: 0 !important;
+            height: 60px;
+            margin-top: 30px !important;
+            width: 100%;
+            z-index: 1001;
+            color: #fff;
+        }
+
+        .newMessage-title {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 10px 5px !important;
+        }
+
+        .newMessage-back {
+            text-align: center;
+            vertical-align: baseline;
+            padding: 12px 5px !important;
+            display: block;
+            cursor: pointer;
+        }
+
+        .newMessage-back i {
+            margin: auto !important;
+        }
+
+        .composeBox {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 60px;
+            width: 100%;
+        }
+
+        .composeBox-inner {
+            height: 100%;
+            width: 100%;
+            padding: 10px !important;
+            background-color: #fbfbfb;
+        }
+
+        .composeBox-inner input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .compose-sideBar {
+            padding: 0 !important;
+            margin: 0 !important;
+            background-color: #fff;
+            overflow-y: auto;
+            border: 1px solid #f7f7f7;
+            height: calc(100% - 160px);
+        }
+
+        /*Conversation*/
+
+        .conversation {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 100%;
+            /*width: 100%;*/
+            border-left: 1px solid rgba(0, 0, 0, .08);
+            /*overflow-y: auto;*/
+        }
+
+        .message {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: url("w.jpg") no-repeat fixed center;
+            background-size: cover;
+            overflow-y: auto;
+            border: 1px solid #f7f7f7;
+            height: calc(100% - 120px);
+        }
+
+        .message-previous {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto;
+            width: 100%;
+        }
+
+        .previous {
+            font-size: 15px;
+            text-align: center;
+            padding: 10px !important;
+            cursor: pointer;
+        }
+
+        .previous a {
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .message-body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: auto;
+            height: auto;
+        }
+
+        .message-main-receiver {
+            /*padding: 10px 20px;*/
+            max-width: 60%;
+        }
+
+        .message-main-sender {
+            padding: 3px 20px !important;
+            margin-left: 40% !important;
+            max-width: 60%;
+        }
+
+        .message-text {
+            margin: 0 !important;
+            padding: 5px !important;
+            word-wrap: break-word;
+            font-weight: 200;
+            font-size: 14px;
+            padding-bottom: 0 !important;
+        }
+
+        .message-time {
+            margin: 0 !important;
+            margin-left: 50px !important;
+            font-size: 12px;
+            text-align: right;
+            color: #9a9a9a;
+            text-shadow: none;
+        }
+
+        .receiver {
+            width: auto !important;
+            padding: 4px 10px 7px !important;
+            border-radius: 10px 10px 10px 0;
+            background: #ffffff;
+            font-size: 12px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+            word-wrap: break-word;
+            display: inline-block;
+        }
+
+        .sender {
+            float: right;
+            width: auto !important;
+            background: #dcf8c6;
+            border-radius: 10px 10px 0 10px;
+            padding: 4px 10px 7px !important;
+            font-size: 12px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+            display: inline-block;
+            word-wrap: break-word;
+        }
+
+        /*Reply*/
+
+        .reply {
+            height: 60px;
+            width: 100%;
+            background-color: #f5f1ee;
+            padding: 10px 5px 10px 5px !important;
+            margin: 0 !important;
+            z-index: 1000;
+        }
+
+        .reply-emojis {
+            padding: 5px !important;
+        }
+
+        .reply-emojis i {
+            text-align: center;
+            padding: 5px 5px 5px 5px !important;
+            color: #93918f;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .reply-recording {
+            padding: 5px !important;
+        }
+
+        .reply-recording i {
+            text-align: center;
+            padding: 5px !important;
+            color: #93918f;
+            cursor: pointer;
+        }
+
+        .reply-send {
+            padding: 5px !important;
+        }
+
+        .reply-send i {
+            text-align: center;
+            padding: 5px !important;
+            color: #93918f;
+            cursor: pointer;
+        }
+
+        .reply-main {
+            padding: 2px 5px !important;
+        }
+
+        .reply-main textarea {
+            width: 100%;
+            resize: none;
+            overflow: hidden;
+            padding: 5px !important;
+            outline: none;
+            border: none;
+            text-indent: 5px;
+            box-shadow: none;
+            height: 100%;
+            font-size: 16px;
+        }
+
+        .reply-main textarea:focus {
+            outline: none;
+            border: none;
+            text-indent: 5px;
+            box-shadow: none;
+        }
+
+        @media screen and (max-width: 700px) {
+            .app {
+                top: 0;
+                height: 100%;
+            }
+
+            .heading {
+                height: 70px;
+                background-color: #009688;
+            }
+
+            .fa-2x {
+                font-size: 2.3em !important;
+            }
+
+            .heading-avatar {
+                padding: 0 !important;
+            }
+
+            .heading-avatar-icon img {
+                height: 50px;
+                width: 50px;
+            }
+
+            .heading-compose {
+                padding: 5px !important;
+            }
+
+            .heading-compose i {
+                color: #fff;
+                cursor: pointer;
+            }
+
+            .heading-dot {
+                padding: 5px !important;
+                margin-left: 10px !important;
+            }
+
+            .heading-dot i {
+                color: #fff;
+                cursor: pointer;
+            }
+
+            .sideBar {
+                height: calc(100% - 130px);
+            }
+
+            .sideBar-body {
+                height: 80px;
+            }
+
+            .sideBar-avatar {
+                text-align: left;
+                padding: 0 8px !important;
+            }
+
+            .avatar-icon img {
+                height: 55px;
+                width: 55px;
+            }
+
+            .sideBar-main {
+                padding: 0 !important;
+            }
+
+            .sideBar-main .row {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .sideBar-name {
+                padding: 10px 5px !important;
+            }
+
+            .name-meta {
+                font-size: 16px;
+                padding: 5% !important;
+            }
+
+            .sideBar-time {
+                padding: 10px !important;
+            }
+
+            .time-meta {
+                text-align: right;
+                font-size: 14px;
+                padding: 4% !important;
+                color: rgba(0, 0, 0, .4);
+                vertical-align: baseline;
+            }
+
+            /*Conversation*/
+            .conversation {
+                padding: 0 !important;
+                margin: 0 !important;
+                height: 100%;
+                /*width: 100%;*/
+                border-left: 1px solid rgba(0, 0, 0, .08);
+                /*overflow-y: auto;*/
+            }
+
+            .message {
+                height: calc(100% - 140px);
+            }
+
+            .reply {
+                height: 70px;
+            }
+
+            .reply-emojis {
+                padding: 5px 0 !important;
+            }
+
+            .reply-emojis i {
+                padding: 5px 2px !important;
+                font-size: 1.8em !important;
+            }
+
+            .reply-main {
+                padding: 2px 8px !important;
+            }
+
+            .reply-main textarea {
+                padding: 8px !important;
+                font-size: 18px;
+            }
+
+            .reply-recording {
+                padding: 5px 0 !important;
+            }
+
+            .reply-recording i {
+                padding: 5px 0 !important;
+                font-size: 1.8em !important;
+            }
+
+            .reply-send {
+                padding: 5px 0 !important;
+            }
+
+            .reply-send i {
+                padding: 5px 2px 5px 0 !important;
+                font-size: 1.8em !important;
+            }
+        }
+
+        .fileContainer {
+            overflow: hidden !important;
+            position: relative !important;
+        }
+
+        .fileContainer [type=file] {
+            cursor: inherit;
+            display: block;
+            font-size: 999px;
+            filter: alpha(opacity=0);
+            min-height: 100%;
+            min-width: 100%;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            text-align: right;
+            top: 0;
+        }
+
+        /* Example stylistic flourishes */
+
+        .fileContainer {
+            border-radius: .5em;
+            float: left;
+            padding: .5em;
+        }
+
+        .fileContainer:hover, .fileContainerm:hover {
+            color: #333333;
+        }
+
+        .fileContainer [type=file], .fileContainerm [type=file] {
+            cursor: pointer !important;
+        }
+
+        .drawer-header-offset {
+            background-color: #00bfa5;
+            color: #fff;
+            height: 40px;
+            padding: 0 24px;
+        }
+
+        .drawer-header, .drawer-header-small, .drawer-header-offset, .drawer-header-popup {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex: none;
+            flex: none;
+            box-sizing: border-box;
+            padding-right: 20px;
+            padding-left: 25px;
+        }
+
+        .pane-header, .chat-main, .header-main, .chat-secondary, .header-secondary, .bubble-actions, .menu-tabs, .menu-pills, .media-panel-header, .tip, .vcard, .popup .btn-light, .pane-header.pane-list-header, .menu-horizontal, .menu-horizontal > span, .bubble-audio-body, .audio, .media-collection, .capture-footer, .drawer-header-offset, .drawer-item .drawer-item-body-row, .drawer-edit-footer, .qr-wrapper .entry-main, .qr-wrapper .entry-platform {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+
+        .drawer-title {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex: 1;
+            flex: 1;
+        }
+
+        .hint, .media-gallery-empty, .well-chat-secondary, .empty-text, .intro .intro-text, .intro .intro-secondary-text, .drawer-blocked-hint, .qr-wrapper .wifi-hint, .btn, .input-placeholder, .bubble-btn, .vcard-name, .list-invite .chat-status, .list-invite .header-secondary, .drawer-controls-summary-text, .empty-title, .pluggable-input .pluggable-input-placeholder, .section-header, .link-preview-container .link-preview-title, .dropdown-item-action, .menu-shortcut > .shortcut, .emoji-input .emoji-input-placeholder, .emoji-panel-title, .intro .intro-body, .drawer-title, .well-chat-name, .drawer-section-footer, .chatlist.list-invite .chat-status, .chatlist.list-invite .header-secondary, .qr-wrapper .entry-text, .qr-wrapper .qr-platforms {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .drawer-header-offset .drawer-title-action, .drawer-header-popup .drawer-title-action {
+            width: 40px;
+            opacity: .7;
+        }
+
+        .drawer-title-action {
+            -webkit-flex: none;
+            flex: none;
+            text-align: initial;
+        }
+
+        .drawer-header-offset .drawer-title-body, .drawer-header-popup .drawer-title-body {
+            font-weight: 500;
+            font-size: 17px;
+            line-height: 19px;
+            margin-top: 2.3px;
+        }
+
+        .drawer-title-body {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            -webkit-flex: 1;
+            flex: 1;
+        }
+
+        .btn-close-drawer {
+            vertical-align: top;
+            margin-top: -2px;
+            -webkit-flex: none;
+            flex: none;
+            cursor: pointer;
+        }
+
+        .btn-close-drawer {
+            border: 0;
+            padding: 0;
+            margin: 0;
+            background: none;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        #wrap {
+            text-align: center;
+            width: 100%;
+        }
+
+        .left, .right {
+            background: #ffffff;
+            display: inline-block;
+            padding: 10px;
+            margin-top: 10px;
+            height: 70px;
+            width: 70px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<div class="container app">
+    <input type="hidden" id="chatuserid">
+    <div class="row app-one">
+        <div class="col-sm-4 side">
+            <div class="side-one">
+                <div class="row heading">
+                    <div class="col-sm-3 col-xs-3 heading-avatar col-md-2 col-lg-2">
+                        <div class="heading-avatar-icon">
+                            <img id="curchatuserimg" src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <h4 id="curchatusername"></h4>
+                    </div>
+                    <div class="col-sm-1 col-xs-1  heading-dot  pull-right">
+                        <a href="#" class="userpop"><i class="fa fa-ellipsis-v fa-2x  pull-right"
+                                                       aria-hidden="true"></i></a>
+                    </div>
+                </div>
+                <div class="row sideBar msguserlist">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-sm-8 conversation">
+            <div class="row heading userheaderblock" style="display: none;">
+                <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+                    <div class="heading-avatar-icon">
+                        <img id="curuserimg" src="https://bootdey.com/img/Content/avatar/avatar6.png">
+                    </div>
+                </div>
+                <input type="hidden" id="curuserid">
+                <div class="col-sm-8 col-xs-7 heading-name">
+                    <a class="heading-name-meta" id="curusername" style="text-decoration: none">John Doe
+                    </a>
+                    <span class="heading-online">Online</span>
+                </div>
+            </div>
+
+            <div class="row message" id="conversation">
+                <div class="clear-fix">&nbsp;</div>
+
+                <div class="msglist" style="display: none">
+
+                </div>
+
+            </div>
+            <div class="dd" style="display: none;width:100%;height: 130px;border-bottom: 1px solid #e84993;">
+                <header class="drawer-header-offset">
+                    <div class="drawer-title">
+                        <div class="drawer-title-action">
+                            <button class="btn-close-drawer csl"><span data-icon="x-light" class=""><svg
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path
+                                    fill="#FFF"
+                                    d="M19.058 17.236l-5.293-5.293 5.293-5.293-1.764-1.764L12 10.178 6.707 4.885 4.942 6.649l5.293 5.293-5.293 5.293L6.707 19 12 13.707 17.293 19l1.765-1.764z"></path></svg></span>
+                            </button>
+                        </div>
+                        <span class="drawer-title-body">Preview</span></div>
+                </header>
+                <div id="wrap" class="imgdata">
+                    <div class="left"><img id="imgdata" src="" style="width:100%"></div>
+                    <!--<a href="javascripit:void(0);"><div class="right"><p>New</p><i class="fa fa-plus"></i></div></a>-->
+                </div>
+            </div>
+            <div class="row reply" style="display: none">
+                <div class="col-sm-1 col-xs-1 reply-emojis">
+                    <i class="fa fa-plus fa-2x"></i>
+                </div>
+                <div class="col-sm-9 col-xs-9 reply-main">
+                    <textarea class="form-control" rows="1" id="comment"></textarea>
+                </div>
+                <div class="col-sm-1 col-xs-1 reply-recording">
+                    <i class="fa fa-instagram fa-2x fileContainer" aria-hidden="true"><input type="file" id="files"
+                                                                                             value=""
+                                                                                             onchange="set(this)"/></i>
+                </div>
+                <div class="col-sm-1 col-xs-1 reply-send">
+                    <i class="fa fa-send fa-2x sendmsg" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Select Chat User</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select class="form-control" id="userlist">
+                        <option value="0">-- Select Chat User --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="setuser">Ok</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    var td = "";
+
+    function set(vals) {
+        if ($('#files').val() != "") {
+            $('.message').css('height', '100%').css('height', '-=250px');
+            $('.dd').css('height', '130px;');
+            $('.dd').show();
+            if (td == "") {
+                td = $('.imgdata').html();
+            }
+
+            var ext = $('#files').val().split('.').pop().toLowerCase();
+
+            if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 1 || $.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 2) {
+                if (vals.files && vals.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.imgdata').html(td);
+                        $('#imgdata').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(vals.files[0]);
+                }
+            } else if ($.inArray(ext, ['pdf']) == 0 || $.inArray(ext, ['PDF']) == 0) {
+                $('.message').css('height', '100%').css('height', '-=715px');
+                $('.dd').css('height', '65%');
+                $('.dd').show();
+                if (vals.files && vals.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var md = '<a href="' + e.target.result + '" target="_blank"><object data="' + e.target.result + '" type="application/pdf" width="100%" height="100%">\n' +
+                            '  <p>Alternative text - include a link <a href="myfile.pdf">to the PDF!</a></p>\n' +
+                            '</object></a>';
+                        $('.imgdata').html(md);
+                    }
+                    reader.readAsDataURL(vals.files[0]);
+                }
+
+            } else if ($.inArray(ext, ['pdf', 'doc']) == 1) {
+
+                if (vals.files && vals.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var md = '<a href="' + e.target.result + '" target="_blank"><img src="uploads/doc.png" style="width: 70px;height: 70px;margin-top: 10px;"></a>';
+                        $('.imgdata').html(md);
+                    }
+                    reader.readAsDataURL(vals.files[0]);
+                }
+            } else {
+
+                if (vals.files && vals.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var md = '<audio controls style="margin-top: 25px;">\n' +
+                            '  <source src="' + e.target.result + '" type="audio/ogg">\n' +
+                            '  <source src="' + e.target.result + '" type="audio/mpeg">\n' +
+                            'Your browser does not support the audio element.\n' +
+                            '</audio>';
+                        $('.imgdata').html(md);
+                    }
+                    reader.readAsDataURL(vals.files[0]);
+                }
+            }
+        }
+
+        else {
+            $('.message').css('height', '100%').css('height', '-=120px');
+            $('.dd').css('height', '130px;');
+            $('.dd').hide();
+        }
+    }
+
+    $(function () {
+        $('.csl').click(function () {
+            $('#files').val('');
+            $('.message').css('height', '100%').css('height', '-=120px');
+            $('.dd').css('height', '130px;');
+            $('.dd').hide();
+        });
+
+        var socket = io.connect('http://' + window.location.hostname + ':8000');
+
+        socket.on('response', function (data) {
+            if (data.action == "Connection") {
+
+            } else if (data.action == "GetChatUserList") {
+                if (data.status == 1) {
+                    var userlist = '';
+                    $.each(data.data, function (key, value) {
+                        userlist += '                    <div class="row sideBar-body seluser" data-id="' + value['user_id'] + '">\n' +
+                            '                        <div class="col-sm-3 col-xs-3 sideBar-avatar">\n' +
+                            '                            <div class="avatar-icon">\n' +
+                            '                                <img id="img' + value['user_id'] + '" src="' + value['img'] + '">\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                        <div class="col-sm-9 col-xs-9 sideBar-main">\n' +
+                            '                            <div class="row">\n' +
+                            '                                <div class="col-sm-8 col-xs-8 sideBar-name">\n' +
+                            '                  <span class="name-meta" id="name' + value['user_id'] + '">' + value['name'] + '\n' +
+                            '                </span><br>\n' +
+                            '                  <span class="name-meta" id="user' + value['user_id'] + '"></span>\n' +
+                            '                                </div>\n' +
+                            '                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time">\n' +
+                            '                  <span class="time-meta pull-right">18:18\n' +
+                            '                </span>\n' +
+                            '                                </div>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>';
+                    });
+                    $('.msguserlist').html(userlist);
+                }
+            } else if (data.action == "GetChatMsg") {
+                var usermsglist = '';
+                $.each(data.data, function (key, value) {
+
+                    ext = "";
+                    if (value['sender_id'] == $('#chatuserid').val()) {
+
+                        if (value['type'] == "Media") {
+                            var ext = value['msg'].split('.').pop().toLowerCase();
+                            if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 1 || $.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 2) {
+                                var md = '<img src="' + value['msg'] + '" style="height: 100px; width: 100px;float: right">';
+                            } else if ($.inArray(ext, ['pdf', 'doc']) == 0) {
+                                var md = '<a href="' + value['msg'] + '" target="_blank"><object data="' + value['msg'] + '" type="application/pdf" width="100%" height="60%">\n' +
+                                    '  <p>Alternative text - include a link <a href="myfile.pdf">to the PDF!</a></p>\n' +
+                                    '</object></a>';
+                            } else if ($.inArray(ext, ['pdf', 'doc']) == 1) {
+                                var md = '<a href="' + value['msg'] + '" target="_blank"><img src="uploads/doc.png" style="width: 70px;height: 70px;float: right"></a>';
+                            } else {
+                                var md = '<audio controls>\n' +
+                                    '  <source src="' + value['msg'] + '" type="audio/ogg">\n' +
+                                    '  <source src="' + value['msg'] + '" type="audio/mpeg">\n' +
+                                    'Your browser does not support the audio element.\n' +
+                                    '</audio>';
+                            }
+                        } else {
+                            var md = value['msg'];
+                        }
+
+
+                        usermsglist += '<div class="row message-body" style="margin-top: 5px !important;">\n' +
+                            '                        <div class="col-sm-12 message-main-sender">\n' +
+                            '                            <div class="sender">\n' +
+                            '                                <div class="message-text">\n' +
+                            '                                    ' + md + '\n' +
+                            '                                </div>\n' +
+                            '                                <span class="message-time pull-right">' + value['date'] + '</span>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>';
+                    } else {
+
+                        if (value['type'] == "Media") {
+                            var ext = value['msg'].split('.').pop().toLowerCase();
+                            if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 1 || $.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 2) {
+                                var md = '<img src="' + value['msg'] + '" style="height: 100px; width: 100px;float: left">';
+                            } else if ($.inArray(ext, ['pdf', 'doc']) == 0) {
+                                var md = '<a href="' + value['msg'] + '" target="_blank"><object data="' + value['msg'] + '" type="application/pdf" width="100%" height="60%">\n' +
+                                    '  <p>Alternative text - include a link <a href="myfile.pdf">to the PDF!</a></p>\n' +
+                                    '</object></a>';
+                            } else if ($.inArray(ext, ['pdf', 'doc']) == 1) {
+                                var md = '<a href="' + value['msg'] + '" target="_blank"><img src="uploads/doc.png" style="width: 70px;height: 70px;float: right"></a>';
+                            } else {
+                                var md = '<audio controls>\n' +
+                                    '  <source src="' + value['msg'] + '" type="audio/ogg">\n' +
+                                    '  <source src="' + value['msg'] + '" type="audio/mpeg">\n' +
+                                    'Your browser does not support the audio element.\n' +
+                                    '</audio>';
+                            }
+                        } else {
+                            var md = value['msg'];
+                        }
+
+                        usermsglist += ' <div class="row message-body" style="margin-top: 5px !important;">\n' +
+                            '                        <div class="col-sm-12 message-main-receiver">\n' +
+                            '                            <div class="receiver">\n' +
+                            '                                <div class="message-text">\n' +
+                            '                                    ' + md + '\n' +
+                            '                                </div>\n' +
+                            '                                <span class="message-time pull-right">' + value['date'] + '</span>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>';
+                    }
+                });
+                $('.msglist').html(usermsglist);
+                $("#conversation").animate({scrollTop: $('#conversation').prop("scrollHeight")}, 1000);
+            } else if (data.action == "SendMsg") {
+                if (data.data.receiver_id == $('#chatuserid').val()) {
+                    if (data.data.sender_id == $('#curuserid').val()) {
+
+                        if (data.data.type == "Media") {
+                            var ext = data.data.msg.split('.').pop().toLowerCase();
+                            if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 1 || $.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 2) {
+                                var md = '<img src="uploads/' + data.data.msg + '" style="height: 100px; width: 100px;float: right">';
+                            } else if ($.inArray(ext, ['pdf', 'doc']) == 0) {
+                                var md = '<a href="uploads/' + data.data.msg + '" target="_blank"><object data="uploads/' + data.data.msg + '" type="application/pdf" width="100%" height="60%">\n' +
+                                    '  <p>Alternative text - include a link <a href="myfile.pdf">to the PDF!</a></p>\n' +
+                                    '</object></a>';
+                            } else if ($.inArray(ext, ['pdf', 'doc']) == 1) {
+                                var md = '<a href="uploads/' + data.data.msg + '" target="_blank"><img src="uploads/doc.png" style="width: 70px;height: 70px;float: right"></a>';
+                            } else {
+                                var md = '<audio controls>\n' +
+                                    '  <source src="uploads/' + data.data.msg + '" type="audio/ogg">\n' +
+                                    '  <source src="uploads/' + data.data.msg + '" type="audio/mpeg">\n' +
+                                    'Your browser does not support the audio element.\n' +
+                                    '</audio>';
+                            }
+                        } else {
+                            var md = data.data.msg;
+                        }
+
+                        var usermsglist = '';
+                        usermsglist += ' <div class="row message-body" style="margin-top: 5px !important;">\n' +
+                            '                        <div class="col-sm-12 message-main-receiver">\n' +
+                            '                            <div class="receiver">\n' +
+                            '                                <div class="message-text">\n' +
+                            '                                    ' + md + '\n' +
+                            '                                </div>\n' +
+                            '                                <span class="message-time pull-right">now</span>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>';
+                        $('.msglist').append(usermsglist);
+                        $("#conversation").animate({scrollTop: $('#conversation').prop("scrollHeight")}, 1000);
+                    }
+                }
+            } else if (data.action == "Typing") {
+                console.log(data);
+                if (data.data.typestatus == "on") {
+                    if (data.data.typeuserid == $('#curuserid').val()) {
+                        $('#user' + data.data.typeuserid).html('typing...');
+                        $('.heading-online').show();
+                        $('.heading-online').html('typing...');
+                    }
+                } else {
+                    $('#user' + data.data.typeuserid).html('online');
+                    $('.heading-online').show();
+                    $('.heading-online').html('online');
+                }
+            } else if (data.action == "ERROR") {
+                console.log(data);
+            }
+
+        });
+
+        $('.userpop').click(function () {
+            $.ajax({
+                type: 'get',
+                url: 'http://' + window.location.hostname + ':8000/getuser',
+                dataType: 'json',
+                success: function (data) {
+                    var op = '<option value="0">-- Select Chat User --</option>';
+                    $.each(data, function (key, value) {
+                        op += '<option value="' + value['user_id'] + '" data-src="' + value['img'] + '">' + value['name'] + '</option>';
+                    });
+                    $('#userlist').html(op);
+                }
+            });
+            $('#myModal').modal('show');
+        });
+
+        $('#setuser').click(function () {
+            $('#chatuserid').val($('#userlist').val());
+            socket.emit('request', {action: "Connection", data: {userid: $('#userlist').val()}});
+            socket.emit('request', {action: "GetChatUserList", data: {userid: $('#userlist').val()}});
+            $('#myModal').modal('hide');
+            $('#curchatusername').html($("#userlist option[value='" + $('#userlist').val() + "']").text());
+            $('#curchatuserimg').attr('src', $("#userlist option[value='" + $('#userlist').val() + "']").data('src'));
+        });
+
+        $('.msguserlist').on('click', '.seluser', function () {
+            $('.userheaderblock').show();
+            $('.msglist').show();
+            $('.reply').show();
+            $('#curuserid').val($(this).data('id'));
+            $('#curuserimg').attr('src', $('#img' + $(this).data('id')).attr('src'));
+            $('#curusername').html($('#name' + $(this).data('id')).html());
+            socket.emit('request', {
+                action: "GetChatMsg",
+                data: {userid: $('#chatuserid').val(), reciverid: $(this).data('id')}
+            });
+        });
+
+        $('.sendmsg').click(function () {
+            if ($('#files').val() != "") {
+                var type = "Media";
+                var file_data = $('#files').prop('files')[0];
+                var form_data = new FormData();
+                form_data.append('img', file_data);
+                $.ajax({
+                    url: 'http://192.168.0.89:8000/sendmsgdata', // point to server-side PHP script
+                    dataType: 'json',  // what to expect back from the PHP script, if anything
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'post',
+                    success: function (php_script_response) {
+
+                        console.log(php_script_response);
+                        $('.message').css('height', '100%').css('height', '-=120px');
+                        $('.dd').hide();
+
+                        socket.emit('request', {
+                            action: "SendMsg",
+                            data: {
+                                userid: $('#chatuserid').val(),
+                                receiverid: $('#curuserid').val(),
+                                msg: php_script_response.name,
+                                type: type
+                            }
+                        });
+                        var usermsglist = '';
+
+                        var ext = $('#files').val().split('.').pop().toLowerCase();
+
+                        if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 1 || $.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == 2) {
+                            var md = '<img src="uploads/' + php_script_response.name + '" style="height: 100px; width: 100px;float: right">';
+                        } else if ($.inArray(ext, ['pdf', 'doc']) == 0) {
+                            var md = '<a href="' + php_script_response.name + '" target="_blank"><object data="uploads/' + php_script_response.name + '" type="application/pdf" width="100%" height="60%">\n' +
+                                '  <p>Alternative text - include a link <a href="myfile.pdf">to the PDF!</a></p>\n' +
+                                '</object></a>';
+                        } else if ($.inArray(ext, ['pdf', 'doc']) == 1) {
+                            var md = '<a href="uploads/' + php_script_response.name + '" target="_blank"><img src="uploads/doc.png" style="width: 70px;height: 70px;float: right"></a>';
+                        } else {
+                            var md = '<audio controls>\n' +
+                                '  <source src="uploads/' + php_script_response.name + '" type="audio/ogg">\n' +
+                                '  <source src="uploads/' + php_script_response.name + '" type="audio/mpeg">\n' +
+                                'Your browser does not support the audio element.\n' +
+                                '</audio>';
+                        }
+
+                        usermsglist += '<div class="row message-body ddd" style="margin-top: 5px !important;">\n' +
+                            '                        <div class="col-sm-12 message-main-sender">\n' +
+                            '                            <div class="sender">\n' +
+                            '                                <div class="message-text">' + md + '</div>\n' +
+                            '                                <span class="message-time pull-right">now</span>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>';
+                        $('.msglist').append(usermsglist);
+                        $('#comment').val('');
+                        $("#conversation").animate({scrollTop: $('#conversation').prop("scrollHeight")}, 1000);
+                    }
+                });
+            }
+            if ($('#comment').val() != "") {
+
+                var type = "Msg";
+                var msg = $('#comment').val();
+
+                socket.emit('request', {
+                    action: "SendMsg",
+                    data: {userid: $('#chatuserid').val(), receiverid: $('#curuserid').val(), msg: msg, type: type}
+                });
+                var usermsglist = '';
+
+                usermsglist += '<div class="row message-body ddd" style="margin-top: 5px !important;">\n' +
+                    '                        <div class="col-sm-12 message-main-sender">\n' +
+                    '                            <div class="sender">\n' +
+                    '                                <div class="message-text">\n' +
+                    '                                    ' + $('#comment').val() + '\n' +
+                    '                                </div>\n' +
+                    '                                <span class="message-time pull-right">now</span>\n' +
+                    '                            </div>\n' +
+                    '                        </div>\n' +
+                    '                    </div>';
+                $('.msglist').append(usermsglist);
+                $('#comment').val('');
+                $("#conversation").animate({scrollTop: $('#conversation').prop("scrollHeight")}, 1000);
+            }
+        });
+
+        var typingTimer;
+        var doneTypingInterval = 500;
+        var $input = $('#comment');
+
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+
+        $("#comment").keyup(function (e) {
+            if (e.keyCode === 8) {
+                if ($(this).val() != "") {
+                    typing($('#chatuserid').val(), $('#curuserid').val(), "on");
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(doneTyping, doneTypingInterval);
+                } else {
+                    typing($('#chatuserid').val(), $('#curuserid').val(), "off");
+                }
+            } else {
+                typing($('#chatuserid').val(), $('#curuserid').val(), "on");
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(doneTyping, doneTypingInterval);
+            }
+        });
+
+        function typing(userid, receiverid, typestatus) {
+            socket.emit('request', {
+                action: "Typing",
+                data: {userid: userid, receiverid: receiverid, typestatus: typestatus}
+            });
+        }
+
+        function doneTyping() {
+            socket.emit('request', {
+                action: "Typing",
+                data: {userid: $('#chatuserid').val(), receiverid: $('#curuserid').val(), typestatus: 'off'}
+            });
+        }
+
+        $(".heading-compose").click(function () {
+            $(".side-two").css({
+                "left": "0"
+            });
+        });
+
+        $(".newMessage-back").click(function () {
+            $(".side-two").css({
+                "left": "-100%"
+            });
+        });
+    })
+</script>
+</html>

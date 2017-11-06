@@ -1,0 +1,43 @@
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<header class="entry-header fading" style="text-align:center">
+    <h1 class="entry-title">Socket.io + Node.js + Mysql</h1>
+
+    <form method="post" action="sendmsgdata" enctype="multipart/form-data">
+        <input type="text" id="msg" name="msg"><br>
+        <input type="file" id="img" name="img"><br>
+        <button type="submit">send</button>
+    </form>
+
+    <input type="text" id="uid"><br>
+    <input type="button" value="done" id="ubtn"><br>
+
+    <input type="text" id="rid"><br>
+    <input type="button" value="done" id="rbtn">
+</header>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        $('#rbtn').click(function () {
+            socket.emit('request', {action: "Demorclick", data: {userid: $('#uid').val(), reciverid: $('#rid').val()}});
+        });
+        $('#ubtn').click(function () {
+            socket.emit('request', {action: "Connection", data: {userid: $('#uid').val()}});
+            socket.emit('request', {action: "GetChatUserList", data: {userid: $('#uid').val()}});
+        });
+    });
+    var socket = io.connect('http://' + window.location.hostname + ':8000');
+    socket.emit('request', {action: "Connection", data: {userid: 3}});
+    socket.on('UserList', function (data) {
+        console.log(data);
+    });
+    socket.on('response', function (data) {
+        console.log(data);
+    });
+    //socket.emit('request',{action:"GetChatUserList",data:{userid:"3"}});
+</script>
