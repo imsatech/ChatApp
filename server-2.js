@@ -24,9 +24,6 @@ server.listen(port, function () {
 io.sockets.on('connection', function (socket) {
 
     socket.on("request", function (res) {
-        // console.log(res);
-        // console.log(res.action);
-        // console.log(res.data);
         try {
             switch (res.action) {
                 case "Connection":
